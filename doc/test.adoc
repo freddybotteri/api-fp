@@ -1,0 +1,12 @@
+== Test unitarios y de integración
+
+Para crear ambos tipos de test usamos https://jestjs.io/[jest], una herramienta muy versátil para
+testear código de js. Cada test unitario tiene la nomenclatura `index.spect.js` y cada test de integración `index.test.js`
+
+Se pueden ejecutar con el comando `npm run test`
+....
+
+env-cmd -f .env.test jest  --no-cache --runInBand --detectOpenHandles --forceExit
+
+....
+

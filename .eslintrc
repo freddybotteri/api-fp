@@ -1,0 +1,13 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "no-console": "error",
+    "semi": "error",
+    "indent": ["error", 4],
+    "quotes": ["error", "single"]
+  }
+}

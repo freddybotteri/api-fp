@@ -1,0 +1,43 @@
+== Validaciones
+
+Los datos se validan tanto con el middleware de validación `validationData` como por el `schema` de moongose.
+En ambos lugares se disparan errores de tipo 422 o 400 según el caso.
+
+- 422: Para excepciones de tipo constraint.
+- 400: Cunado la data enviada desde el cliente no cumple con la validación adecuada.
+
+Ejemplo de validación en middleware.
+
+....
+validate: (req, res, next) => {
+    const err = validationResult(req);
+    if (err.isEmpty()) {
+      return next();
+    }
+    throw new BadRequest("Validation data",err.errors[0].msg);
+  },
+....
+
+Ejemplo de validación en schema, en este caso una constraint
+para impedir que una FK en uso sea borrada.
+
+....
+	schema.pre("deleteOne",function(next){
+		return FKHelper(db.Relation,{"_id":this._conditions._id} ,"schema name","type message that tha front should manager").then(r  =>{
+			next();
+		});
+	});
+....
+
+
+- Aquí hacemos uso de un helper, el cual se encuentra en `./utils/foreightKey_preDelete.js`
+
+....
+model.findOne(query, (err, result) => {
+    if (result) {
+      return reject(new UnprocessableEntity(`FK Constraint ,'${NameSchema}' is used`,type));
+    }
+    else return resolve(true);
+  });
+....
+

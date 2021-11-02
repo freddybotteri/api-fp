@@ -1,0 +1,20 @@
+== Converter
+
+Cuando se quiera modificar la estructura  de la respuesta se debe usar un conversor,
+estos estarán en el archivo `./services/converter.js`
+
+----
+const changeType = async(data)=> {
+
+	let response = [];
+	for(let i in data){
+		const result = omitSingle("type_id", data[i]._doc);
+		response.push({...result,type:data[i].type_id});
+	}
+	return response;
+
+};
+----
+
+Aquí se sustituye una key por otra, y así enviar la respuesta que el front
+necesita.

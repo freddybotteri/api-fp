@@ -1,0 +1,7 @@
+== Base de datos
+
+La base de datos mongoDB se maneja con https://mongoosejs.com/[Moongose.js] una librería para el modelado de datos.
+Creamos un schema por cada documento.
+
+Una cosa a tener en cuenta es priorizar el uso de la sintaxis que da esta librería por sobre
+el uso de comando de mongoDB.

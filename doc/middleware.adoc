@@ -1,0 +1,89 @@
+== Middleware
+
+Uso y manejo de los middleware a lo largo de la app.
+
+En expressjs son usados para gestionar procesos a lo largo de una peticion.
+Desde la llegada de una request se trabaja con ella , para hacer verificación,
+autenticación y otros.
+
+En la actuales aplicaciones, se cuenta con:
+
+- authenticate.js: Usado para verificar un token, tanto su validez como tiempo de expiración.
+	Aquí usamos la librería jsonwebtoken recomendada por la web https://jwt.io/[jwt.io],
+	lo cual la convierte en una solución estable y con soporte.
+
+La implementación de este la podemos encontrar en `./routers/option.js`
+
+
+		router.put("/:option_id",
+      authenticate({jwt}).auth);
+
+
+- handlerError.js: Encargado de manejar los errores que capture el try-catch en la lógica del endPoint.
+	Aquí se averigua si el Error es de tipo GeneralError ,UnprocessableEntity y errores de tipo 500.
+	Estos de tipo 500 son aquellos que no capturamos y manejamos, son aquellos que luego agruparemos o simplemente
+	no tenemos idea de que existen.
+
+		La implementación de este la podemos encontrar en `./routers/option.js`
+
+
+      router.put("/:option_id",
+        optionHandler.put,
+        handlerErrors);
+
+
+- permit.js: Con este middleware lo que buscamos es controlar el acceso según el rol de un usuario.
+	Con ayuda del token el cual contiene la información necesaria para esta operación, podemos saber los permisos del usuario.
+
+	La implementación de este la podemos encontrar en `./routers/option.js`
+
+
+    router.put("/:option_id",
+      handlerPermit({Role1:true,Role2:false,Role3:false}),
+      );
+
+
+- projectVerify.js: Para validar que los permisos de un usuario solo puedan ser usados en el proyecto que corresponde.
+
+	La implementación de este la podemos encontrar en `./routers/option.js`
+
+
+    router.put("/:option_id",
+      projectVerify("El proyecto en cuestión"),
+      );
+
+
+- validationData.js: Con el propósito de validar la data proveniente desde el cliente,
+ usamos el paquete https://express-validator.github.io/docs/[express-validator], con el cual podemos validar longitud, formato y muchas cosas mas.
+ Desde aquí se envían errores de tipo 400 al cliente, el cual los maneja a su conveniencia.
+ La implementación de este la podemos encontrar en `./routers/option.js`
+
+
+		router.post("/",
+		  validationData.optionValidationRules("post"),
+		  validationData.validate);
+
+
+Aquí también se usa según el verbo post o put distintas reglas de validación,
+usando el patron strategy `(./utils/validationStrategy.js)`.
+
+Aquí se puede ver la estructura básica de tal patron.
+
+
+  const unique = {
+    strategies: {
+      post: function() {
+        return
+      },
+      put: function() {
+        return
+      },
+    },
+    action: function(strategy){
+      return this.strategies[strategy]();
+    }
+  };
+
+  module.exports = {
+    unique
+  };

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.10">
+<title>Estructura general Auth - Plugins</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+</head>
+<body class="article toc2 toc-left">
+<div id="header">
+<h1>Estructura general Auth - Plugins</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of content</div>
+<ul class="sectlevel1">
+<li><a href="#_openapi">OpenApi</a>
+<ul class="sectlevel2">
+<li><a href="#_estructura_básica">Estructura básica.</a></li>
+</ul>
+</li>
+<li><a href="#_middleware">Middleware</a></li>
+<li><a href="#_errores">Errores</a></li>
+<li><a href="#_validaciones">Validaciones</a></li>
+<li><a href="#_base_de_datos">Base de datos</a></li>
+<li><a href="#_converter">Converter</a></li>
+<li><a href="#_test_unitarios_y_de_integración">Test unitarios y de integración</a></li>
+<li><a href="#_uso_de_asciidoc">Uso de AsciiDoc</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Arquitectura por capas.</p>
+</div>
+<hr>
+<div class="imageblock">
+<div class="content">
+<img src="../doc/imgs/capasInfra.png" alt="capasInfra">
+</div>
+<div class="title">Figure 1. Capas</div>
+</div>
+<hr>
+<div class="paragraph">
+<p>Las capas son:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>router: Puntos de entrada a cada endpoint.</p>
+</li>
+<li>
+<p>middleware: Actúan como filtros y son trozos código muy específicos, que
+ayudan a la lógica del negocio.</p>
+</li>
+<li>
+<p>endPoint: La logica principal se encuentra aquí.</p>
+</li>
+<li>
+<p>schemas: Funciona como un modelo de datos. En este a manera de active record se puede encontrar
+algunas consultas demasiado grandes para la capa de endPoint.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Para priorizar la flexibilidad y la rapidez de desarrollo en los schemas se uso Active Record,con la ayuda de métodos static,
+los esquemas son capaces de manejar lógica y devolver consultas más complejas.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>La principal característica en este desarrollo es el uso de la inyección de dependencia,
+para usar librerias y demas archivos procure usar esta técnica.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_openapi">OpenApi</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Para ofrecer un punto común entre desarrolladores de backend y frontend, asi como
+documentar la API, se uso openapi, una manera fácil y cómoda de generar documentos
+con un archivo yaml.</p>
+</div>
+<div class="sect2">
+<h3 id="_estructura_básica">Estructura básica.</h3>
+<div class="listingblock">
+<div class="content">
+<pre>openapi: '3.0.0'  <b class="conum">(1)</b>
+
+	info: <b class="conum">(2)</b>
+    version: 1.0.0
+
+  servers: <b class="conum">(3)</b>
+    - url: https://www./api/v1/
+
+  tags: <b class="conum">(4)</b>
+    - name: options
+
+  paths: <b class="conum">(5)</b>
+        get:<b class="conum">(6)</b>
+          tags:<b class="conum">(7)</b>
+            - functional
+          parameters:<b class="conum">(8)</b>
+            - in: path
+              name: sort
+              schema:
+                type: string
+              required: true
+              description: Order list
+              examples:<b class="conum">(9)</b>
+                asc:
+                  value: "asc"
+                desc:
+                  value: "desc"
+          responses:<b class="conum">(10)</b>
+            '200':
+              description: Functional response with total order
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/ResponseFunctionalTotal'
+            '400':
+              $ref: '#/components/responses/BadRequestError'
+            '401':
+              $ref: '#/components/responses/UnauthorizedError'
+            default:
+              description: unexpected error
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Error'
+
+  components: <b class="conum">(11)</b>
+    securitySchemes: <b class="conum">(12)</b>
+
+    schemas:<b class="conum">(13)</b>
+
+    responses:<b class="conum">(14)</b></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Version de openapi a usar.</p>
+</li>
+<li>
+<p>Información correspondiente con la api en general.</p>
+</li>
+<li>
+<p>La url de los server, en otras palabras es la parte común a cada endpoint.</p>
+</li>
+<li>
+<p>Usado para agrupar los endpoint según convenga</p>
+</li>
+<li>
+<p>Cada uno de los endPoint, según su verbo.</p>
+</li>
+<li>
+<p>El verbo http a usar.</p>
+</li>
+<li>
+<p>Se usa el tag que mas convenga, declarado en el punto 4.</p>
+</li>
+<li>
+<p>Los distintos parámetros que viajan via url.</p>
+</li>
+<li>
+<p>Tanto aquí como en otros lugares se puede usar ejemplos.</p>
+</li>
+<li>
+<p>Las distintas respuestas que puede proporcionar la api al cliente.</p>
+</li>
+<li>
+<p>Diferentes componentes inutilizables, usados a lo largo de multiples endpoints.</p>
+</li>
+<li>
+<p>Proporciona información sobre la seguridad que tiene cada endpoint.</p>
+</li>
+<li>
+<p>Los distintos conjuntos de datos.</p>
+</li>
+<li>
+<p>Usando los schemas y manipulando su estructura se enviaran y recibirán en cada endpoint</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><a href="https://swagger.io/docs/specification/about/">más información aquí&#8230;&#8203;</a></p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_middleware">Middleware</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Uso y manejo de los middleware a lo largo de la app.</p>
+</div>
+<div class="paragraph">
+<p>En expressjs son usados para gestionar procesos a lo largo de una peticion.
+Desde la llegada de una request se trabaja con ella , para hacer verificación,
+autenticación y otros.</p>
+</div>
+<div class="paragraph">
+<p>En la actuales aplicaciones, se cuenta con:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>authenticate.js: Usado para verificar un token, tanto su validez como tiempo de expiración.
+Aquí usamos la librería jsonwebtoken recomendada por la web <a href="https://jwt.io/">jwt.io</a>,
+lo cual la convierte en una solución estable y con soporte.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>La implementación de este la podemos encontrar en <code>./routers/option.js</code></p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>router.put("/:option_id",
+    authenticate({jwt}).auth);</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>handlerError.js: Encargado de manejar los errores que capture el try-catch en la lógica del endPoint.
+Aquí se averigua si el Error es de tipo GeneralError ,UnprocessableEntity y errores de tipo 500.
+Estos de tipo 500 son aquellos que no capturamos y manejamos, son aquellos que luego agruparemos o simplemente
+no tenemos idea de que existen.</p>
+<div class="literalblock">
+<div class="content">
+<pre>La implementación de este la podemos encontrar en `./routers/option.js`</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>router.put("/:option_id",
+  optionHandler.put,
+  handlerErrors);</pre>
+</div>
+</div>
+</li>
+<li>
+<p>permit.js: Con este middleware lo que buscamos es controlar el acceso según el rol de un usuario.
+Con ayuda del token el cual contiene la información necesaria para esta operación, podemos saber los permisos del usuario.</p>
+<div class="literalblock">
+<div class="content">
+<pre>La implementación de este la podemos encontrar en `./routers/option.js`</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>router.put("/:option_id",
+  handlerPermit({Role1:true,Role2:false,Role3:false}),
+  );</pre>
+</div>
+</div>
+</li>
+<li>
+<p>projectVerify.js: Para validar que los permisos de un usuario solo puedan ser usados en el proyecto que corresponde.</p>
+<div class="literalblock">
+<div class="content">
+<pre>La implementación de este la podemos encontrar en `./routers/option.js`</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>router.put("/:option_id",
+  projectVerify("El proyecto en cuestión"),
+  );</pre>
+</div>
+</div>
+</li>
+<li>
+<p>validationData.js: Con el propósito de validar la data proveniente desde el cliente,
+usamos el paquete <a href="https://express-validator.github.io/docs/">express-validator</a>, con el cual podemos validar longitud, formato y muchas cosas mas.
+Desde aquí se envían errores de tipo 400 al cliente, el cual los maneja a su conveniencia.
+La implementación de este la podemos encontrar en <code>./routers/option.js</code></p>
+<div class="literalblock">
+<div class="content">
+<pre>router.post("/",
+  validationData.optionValidationRules("post"),
+  validationData.validate);</pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Aquí también se usa según el verbo post o put distintas reglas de validación,
+usando el patron strategy <code>(./utils/validationStrategy.js)</code>.</p>
+</div>
+<div class="paragraph">
+<p>Aquí se puede ver la estructura básica de tal patron.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>const unique = {
+  strategies: {
+    post: function() {
+      return
+    },
+    put: function() {
+      return
+    },
+  },
+  action: function(strategy){
+    return this.strategies[strategy]();
+  }
+};</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>module.exports = {
+  unique
+};</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_errores">Errores</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>El manejo de errores y su procesamiento es una parte importante en el desarrollo de una API,
+por ello se creo un archivo encargado de extender la funcionalidad dada por la clase Error del framework express.
+Este archivo es <code>errors.js</code> que se encuentra en <code>./utils/errors.js</code></p>
+</div>
+<div class="paragraph">
+<p>Aquí manejamos 	GeneralError,BadRequest,NotFound, UnprocessableEntity, estos con un type dependiendo si son
+errores de validación o genéricos.</p>
+</div>
+<div class="paragraph">
+<p>Aquí podemos ver como se extiende la funcionalidad de Error</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>	class GeneralError extends Error {
+		constructor(message) {
+			super();
+			this.message = message;
+		}
+
+		getCode() {
+			if (this instanceof BadRequest) {
+				return 400;
+			} if (this instanceof NotFound) {
+				return 404;
+			}if (this instanceof UnprocessableEntity) {
+				return 422;
+			}
+			return 500;
+		}
+	}</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_validaciones">Validaciones</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Los datos se validan tanto con el middleware de validación <code>validationData</code> como por el <code>schema</code> de moongose.
+En ambos lugares se disparan errores de tipo 422 o 400 según el caso.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>422: Para excepciones de tipo constraint.</p>
+</li>
+<li>
+<p>400: Cunado la data enviada desde el cliente no cumple con la validación adecuada.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Ejemplo de validación en middleware.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>validate: (req, res, next) =&gt; {
+    const err = validationResult(req);
+    if (err.isEmpty()) {
+      return next();
+    }
+    throw new BadRequest("Validation data",err.errors[0].msg);
+  },</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ejemplo de validación en schema, en este caso una constraint
+para impedir que una FK en uso sea borrada.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>	schema.pre("deleteOne",function(next){
+		return FKHelper(db.Relation,{"_id":this._conditions._id} ,"schema name","type message that tha front should manager").then(r  =&gt;{
+			next();
+		});
+	});</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Aquí hacemos uso de un helper, el cual se encuentra en <code>./utils/foreightKey_preDelete.js</code></p>
+</li>
+</ul>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>model.findOne(query, (err, result) =&gt; {
+    if (result) {
+      return reject(new UnprocessableEntity(`FK Constraint ,'${NameSchema}' is used`,type));
+    }
+    else return resolve(true);
+  });</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_base_de_datos">Base de datos</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>La base de datos mongoDB se maneja con <a href="https://mongoosejs.com/">Moongose.js</a> una librería para el modelado de datos.
+Creamos un schema por cada documento.</p>
+</div>
+<div class="paragraph">
+<p>Una cosa a tener en cuenta es priorizar el uso de la sintaxis que da esta librería por sobre
+el uso de comando de mongoDB.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_converter">Converter</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Cuando se quiera modificar la estructura  de la respuesta se debe usar un conversor,
+estos estarán en el archivo <code>./services/converter.js</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>const changeType = async(data)=&gt; {
+
+	let response = [];
+	for(let i in data){
+		const result = omitSingle("type_id", data[i]._doc);
+		response.push({...result,type:data[i].type_id});
+	}
+	return response;
+
+};</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Aquí se sustituye una key por otra, y así enviar la respuesta que el front
+necesita.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_test_unitarios_y_de_integración">Test unitarios y de integración</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Para crear ambos tipos de test usamos <a href="https://jestjs.io/">jest</a>, una herramienta muy versátil para
+testear código de js. Cada test unitario tiene la nomenclatura <code>index.spect.js</code> y cada test de integración <code>index.test.js</code></p>
+</div>
+<div class="paragraph">
+<p>Se pueden ejecutar con el comando <code>npm run test</code></p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>env-cmd -f .env.test jest  --no-cache --runInBand --detectOpenHandles --forceExit</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_uso_de_asciidoc">Uso de AsciiDoc</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Esta es una libreria usada para generar documentación dinamicamente , con la ayuda de comandos en nodejs.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/">Asciidoctor</a></p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2020-09-01 10:57:37 +0200
+</div>
+</div>
+</body>
+</html>

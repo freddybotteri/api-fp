@@ -1,0 +1,79 @@
+== OpenApi
+
+Para ofrecer un punto común entre desarrolladores de backend y frontend, asi como
+documentar la API, se uso openapi, una manera fácil y cómoda de generar documentos
+con un archivo yaml.
+
+=== Estructura básica.
+----
+openapi: '3.0.0'  <1>
+
+	info: <2>
+    version: 1.0.0
+
+  servers: <3>
+    - url: https://www./api/v1/
+
+  tags: <4>
+    - name: options
+
+  paths: <5>
+        get:<6>
+          tags:<7>
+            - functional
+          parameters:<8>
+            - in: path
+              name: sort
+              schema:
+                type: string
+              required: true
+              description: Order list
+              examples:<9>
+                asc:
+                  value: "asc"
+                desc:
+                  value: "desc"
+          responses:<10>
+            '200':
+              description: Functional response with total order
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/ResponseFunctionalTotal'
+            '400':
+              $ref: '#/components/responses/BadRequestError'
+            '401':
+              $ref: '#/components/responses/UnauthorizedError'
+            default:
+              description: unexpected error
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Error'
+
+  components: <11>
+    securitySchemes: <12>
+
+    schemas:<13>
+
+    responses:<14>
+
+
+----
+<1> Version de openapi a usar.
+<2> Información correspondiente con la api en general.
+<3> La url de los server, en otras palabras es la parte común a cada endpoint.
+<4> Usado para agrupar los endpoint según convenga
+<5> Cada uno de los endPoint, según su verbo.
+<6> El verbo http a usar.
+<7> Se usa el tag que mas convenga, declarado en el punto 4.
+<8> Los distintos parámetros que viajan via url.
+<9> Tanto aquí como en otros lugares se puede usar ejemplos.
+<10> Las distintas respuestas que puede proporcionar la api al cliente.
+<11> Diferentes componentes inutilizables, usados a lo largo de multiples endpoints.
+<12> Proporciona información sobre la seguridad que tiene cada endpoint.
+<13> Los distintos conjuntos de datos.
+<14> Usando los schemas y manipulando su estructura se enviaran y recibirán en cada endpoint
+
+
+https://swagger.io/docs/specification/about/[más información aquí...]

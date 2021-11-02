@@ -1,0 +1,46 @@
+{
+  "name": "backEnd",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "env-cmd -f .env.test jest  --no-cache --runInBand --detectOpenHandles --forceExit",
+    "test:staging": "env-cmd -f .env.test.staging jest --no-cache --runInBand --detectOpenHandles --forceExit",
+    "start": "env-cmd -f .env.development node server.js",
+    "staging": "env-cmd -f .env.staging node server.js",
+    "production": "env-cmd -f .env.production node server.js",
+    "generate:doc": "node ./doc/index.js",
+    "lint": "eslint . --ext  .js",
+    "lint:fix": "eslint --fix --ext .js ."
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
+  },
+  "dependencies": {
+    "asciidoctor": "2.2.0",
+    "axios": "0.19.2",
+    "bcrypt": "5.0.0",
+    "body-parser": "1.19.0",
+    "cors": "2.8.5",
+    "dotenv": "8.2.0",
+    "env-cmd": "10.1.0",
+    "express": "4.17.1",
+    "express-validator": "6.6.0",
+    "husky": "3.0.4",
+    "jest": "24.8.0",
+    "jsonwebtoken": "8.5.1",
+    "lodash": "4.17.20",
+    "mongoose": "5.9.21",
+    "nodemailer": "6.4.10",
+    "prom-client": "10.0.0",
+    "swagger-ui-express": "4.1.4",
+    "yamljs": "0.3.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "10.0.2",
+    "eslint": "6.2.0",
+    "faker": "4.1.0",
+    "prettier": "2.1.1",
+    "supertest": "4.0.2"
+  }
+}

@@ -1,0 +1,3074 @@
+openapi: '3.0.0'
+
+info:
+  version: 1.0.0
+  title: Api functional
+  description: System in charge of managing.
+servers:
+  - url: http://localhost:3004/
+tags:
+  - name: options
+    description: |
+      Responsible for managing.
+  - name: data
+    description: |
+      Operations to handle.
+  - name: category
+    description: |
+      Manage the different categories
+  - name: clone
+    description: |
+      Manager clone actions
+  - name: public
+    description: |
+      Manager public
+paths:
+  /datas/:
+    post:
+      tags:
+        - data
+      description: |
+        Endpoint for save in server.
+      operationId: saveData
+      requestBody:
+        description: Post to add data to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataData'
+      responses:
+        '200':
+          description: Data response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseData'
+        '400(1)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlUnique'
+        '400(2)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlCaracters'
+        '400(3)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlMax'
+        '400(4)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlMin'
+        '400(5)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlRequired'
+        '400(6)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMaxDescriptionQuestion'
+        '400(7)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlSharePathMin'
+        '400(8)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlShareTypeRequired'
+        '400(9)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlShareRequired'
+        '400(10)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlShareTypeNotFound'
+
+        '400(11)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerImagePathRequired'
+        '400(12)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerImageRequired'
+        '400(13)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerVideoIdRequired'
+        '400(14)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerVideoNotFound'
+        '400(15)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerVideoRequired'
+        '400(16)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerTypeNotFound'
+        '400(17)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerTypeRequired'
+        '400(18)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerRequired'
+        '400(19)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionImagePositionNotFound'
+        '400(20)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionImagePathRequired'
+        '400(21)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionImageRequired'
+        '400(22)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionVideoIdRequired'
+        '400(23)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionVideoNotFound'
+        '400(24)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionVideoRequired'
+        '400(25)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionTypeNotFound'
+        '400(26)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionTypeRequired'
+        '400(27)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionRequired'
+
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - data
+      responses:
+        '200':
+          description: Data response with total
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataTotal'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /datas/filter/{order}/:
+    get:
+      tags:
+        - data
+      parameters:
+        - in: path
+          name: order
+          schema:
+            type: string
+          required: true
+          description: Order list
+          examples:
+            asc:
+              value: "asc"
+            desc:
+              value: "desc"
+      responses:
+        '200':
+          description: Data response with total order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataTotalAscDesc'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /datas/{order}/{from}/{quantity}/:
+    get:
+      tags:
+        - data
+      parameters:
+        - in: path
+          name: order
+          schema:
+            type: string
+          required: true
+          description: Order list
+          examples:
+            asc:
+              value: "asc"
+            desc:
+              value: "desc"
+        - in: path
+          name: from
+          schema:
+            type: string
+          required: true
+          description: From init count list
+          examples:
+            one:
+              value: "1"
+            two:
+              value: "10"
+        - in: path
+          name: quantity
+          schema:
+            type: string
+          required: true
+          description: From final count list
+          examples:
+            ten:
+              value: "10"
+      responses:
+        '200':
+          description: Data response with total
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataTotalAscDesc'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /datas/{data_id}:
+    get:
+      tags:
+        - data
+      parameters:
+        - in: path
+          name: data_id
+          schema:
+            type: string
+          required: true
+          description: Get a data by id
+          examples:
+            one:
+              value: "23453454e54vb"
+            two:
+              value: "dfty45ye5ergr"
+      responses:
+        '200':
+          description: Data response for one id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataById'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - data
+      description: Update the data data.
+      operationId: updateData
+      parameters:
+        - in: path
+          name: data_id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the data to put
+          examples:
+            _idOne:
+              value: "ewrt43tgf43tg8"
+            _idTwo:
+              value: "ewfrewgu90reer8"
+      requestBody:
+        description: Put to add data to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataDataUpdate'
+      responses:
+        '201':
+          description: Data update response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseData'
+        '400(1)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlUnique'
+        '400(2)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlCaracters'
+        '400(3)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlMax'
+        '400(4)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlMin'
+        '400(5)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlRequired'
+        '400(7)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlSharePathMin'
+        '400(8)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlShareTypeRequired'
+        '400(9)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlShareRequired'
+        '400(10)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationUrlShareTypeNotFound'
+        '400(11)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerImagePathRequired'
+        '400(12)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerImageRequired'
+        '400(13)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerVideoIdRequired'
+        '400(14)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerVideoNotFound'
+        '400(15)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerVideoRequired'
+        '400(16)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerTypeNotFound'
+        '400(17)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerTypeRequired'
+        '400(18)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaAnswerRequired'
+        '400(19)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionImagePositionNotFound'
+        '400(20)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionImagePathRequired'
+        '400(21)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionImageRequired'
+        '400(22)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionVideoIdRequired'
+        '400(23)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionVideoNotFound'
+        '400(24)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionVideoRequired'
+        '400(25)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionTypeNotFound'
+        '400(26)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionTypeRequired'
+        '400(27)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaQuestionRequired'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /datas/{data_id}/results:
+    get:
+      tags:
+        - data
+      parameters:
+        - in: path
+          name: data_id
+          schema:
+            type: string
+          required: true
+          description: Get a data results
+          examples:
+            one:
+              value: "23453454e54vb"
+            two:
+              value: "dfty45ye5ergr"
+      responses:
+        '200':
+          description: Data result response for one id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataResults'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /datas/{data_id}/question/:
+    patch:
+      tags:
+        - data
+      description: Patch for add question in a data.
+      operationId: patchData
+      parameters:
+        - in: path
+          name: data_id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the data to patch
+          examples:
+            _idOne:
+              value: "ewrt43tgf43tg8"
+            _idTwo:
+              value: "ewfrewgu90reer8"
+      requestBody:
+        description: Patch to add question to the data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataDataQuestion'
+      responses:
+        '201':
+          description: Data question add response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataQuestion'
+        '400 (1)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationQuestion'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /datas/{data_id}/question/{question_id}/:
+    patch:
+      tags:
+        - data
+      description: Patch for update a question in data.
+      operationId: patchUpdateQuestionData
+      parameters:
+        - in: path
+          name: data_id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the data to patch
+          examples:
+            _idOne:
+              value: "ewrt43tgf43tg8"
+            _idTwo:
+              value: "ewfrewgu90reer8"
+        - in: path
+          name: question_id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the question to patch
+          examples:
+            _id:
+              value: "e45ygh4554dfg54"
+      requestBody:
+        description: Patch to update question in data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataDataQuestion'
+      responses:
+        '201':
+          description: Data question update response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataQuestion'
+        '400 (1)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationQuestion'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /datas/{data_id}/question/{question_id}/option/{option_id}/:
+    patch:
+      tags:
+        - data
+      description: Patch for add a option in question.
+      operationId: patchaddOptionQuestion
+      parameters:
+        - in: path
+          name: data_id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the data
+          examples:
+            _idOne:
+              value: "ewrt43tgf43tg8"
+            _idTwo:
+              value: "ewfrewgu90reer8"
+        - in: path
+          name: question_id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the question to patch the option
+          examples:
+            _id:
+              value: "e45ygh4554dfg54"
+        - in: path
+          name: option_id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the option to add
+          examples:
+            _id:
+              value: "5645h5647658r"
+      responses:
+        '201':
+          description: Data question update response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataQuestionOption'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /datas/category/{category_id}/{quantity}/random/:
+    get:
+      tags:
+        - data
+      parameters:
+        - in: path
+          name: category_id
+          schema:
+            type: string
+          required: true
+          description: Get a random datas by category
+          examples:
+            _idOne:
+              value: "ewrt43tgf43tg8"
+            _idTwo:
+              value: "ewfrewgu90reer8"
+        - in: path
+          name: quantity
+          schema:
+            type: string
+          required: true
+          description: From final count list
+          examples:
+            ten:
+              value: "10"
+      responses:
+        '200':
+          description: Data response by category id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataRandom'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /datas/filter/{category_id}/{order}/{from}/{quantity}/:
+    get:
+      tags:
+        - data
+      parameters:
+        - in: path
+          name: category_id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the category
+          examples:
+            _idOne:
+              value: "ewrt43tgf43tg8"
+            _idTwo:
+              value: "ewfrewgu90reer8"
+        - in: path
+          name: order
+          schema:
+            type: string
+          required: true
+          description: The asc/desc order list
+          examples:
+            asc:
+              value: "asc"
+            desc:
+              value: "desc"
+        - in: path
+          name: from
+          schema:
+            type: string
+          required: true
+          description: The value to init count in list
+          examples:
+            one:
+              value: "1"
+            two:
+              value: "10"
+
+        - in: path
+          name: quantity
+          schema:
+            type: string
+          required: true
+          description: The number of items to return.
+          examples:
+            one:
+              value: "10"
+            two:
+              value: "50"
+      responses:
+        '200':
+          description: Data response by categoty id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataByCategory'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /datas/{data_id}/public:
+    put:
+      tags:
+        - data
+      description: Update the data public state.
+      operationId: updateDataPublic
+      parameters:
+        - in: path
+          name: data_id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the data to put
+          examples:
+            _idOne:
+              value: "ewrt43tgf43tg8"
+            _idTwo:
+              value: "ewfrewgu90reer8"
+      requestBody:
+        description: Put to update the public state in data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - public
+              properties:
+                public:
+                  type: string
+              example:
+                public: "true"
+
+      responses:
+        '201':
+          description: Data update response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseData'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /datas/{data_id}/enable:
+    put:
+      tags:
+        - data
+      description: Update the data enable.
+      operationId: updateDataEnable
+      parameters:
+        - in: path
+          name: data_id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the data to put
+          examples:
+            _idOne:
+              value: "ewrt43tgf43tg8"
+            _idTwo:
+              value: "ewfrewgu90reer8"
+      requestBody:
+        description: Put to update the anable state in data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - enable
+              properties:
+                public:
+                  type: string
+              example:
+                enable: "false"
+
+      responses:
+        '201':
+          description: Data update response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseData'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /datas/search/{word}/{order}/{from}/{quantity}:
+    get:
+      tags:
+        - data
+      parameters:
+        - in: path
+          name: word
+          schema:
+            type: string
+          required: true
+          description: The word to search
+          examples:
+            wordOne:
+              value: "some"
+            wordTwo:
+              value: "word"
+        - in: path
+          name: order
+          schema:
+            type: string
+          required: true
+          description: Get a random datas by order
+          examples:
+            asc:
+              value: "ASC"
+            desc:
+              value: "DESC"
+        - in: path
+          name: from
+          schema:
+            type: string
+          required: true
+          description: Count init index
+          examples:
+            one:
+              value: "1"
+            two:
+              value: "10"
+        - in: path
+          name: quantity
+          schema:
+            type: string
+          required: true
+          description: Count finish index
+          examples:
+            ten:
+              value: "1"
+            fifty:
+              value: "50"
+      responses:
+        '200':
+          description: Data response the list of datas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataSearch'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /datas/users/{user_id}/{order}/{from}/{quantity}:
+    get:
+      tags:
+        - data
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: string
+          required: true
+          description: The user id to search
+          examples:
+            userId1:
+              value: "erwt453654g"
+            userId2:
+              value: "345gtdfeg34"
+        - in: path
+          name: order
+          schema:
+            type: string
+          required: true
+          description: Get a random datas by order
+          examples:
+            asc:
+              value: "ASC"
+            desc:
+              value: "DESC"
+        - in: path
+          name: from
+          schema:
+            type: string
+          required: true
+          description: Count init index
+          examples:
+            one:
+              value: "1"
+            two:
+              value: "10"
+        - in: path
+          name: quantity
+          schema:
+            type: string
+          required: true
+          description: Count finish index
+          examples:
+            ten:
+              value: "1"
+            fifty:
+              value: "50"
+      responses:
+        '200':
+          description: Data response with total filter by user id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataTotalByUserId'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /datas/users/{user_id}/search/{word}/{order}/{from}/{quantity}:
+    get:
+      tags:
+        - data
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: string
+          required: true
+          description: The user id to search
+          examples:
+            One:
+              value: "2354"
+            Two:
+              value: "3456"
+        - in: path
+          name: word
+          schema:
+            type: string
+          required: true
+          description: The word to search
+          examples:
+            wordOne:
+              value: "some"
+            wordTwo:
+              value: "word"
+        - in: path
+          name: order
+          schema:
+            type: string
+          required: true
+          description: Get a random datas by order
+          examples:
+            asc:
+              value: "ASC"
+            desc:
+              value: "DESC"
+        - in: path
+          name: from
+          schema:
+            type: string
+          required: true
+          description: Count init index
+          examples:
+            one:
+              value: "1"
+            two:
+              value: "10"
+        - in: path
+          name: quantity
+          schema:
+            type: string
+          required: true
+          description: Count finish index
+          examples:
+            ten:
+              value: "1"
+            fifty:
+              value: "50"
+      responses:
+        '200':
+          description: Data response with total filter by user id and word.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataTotalByUserIdAndWord'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /datas/users/{user_id}/filter/{filter_id}/{order}/{from}/{quantity}:
+    get:
+      tags:
+        - data
+      parameters:
+        - in: path
+          name: user_id
+          schema:
+            type: string
+          required: true
+          description: The user id to search
+          examples:
+            One:
+              value: "2354"
+            Two:
+              value: "3456"
+        - in: path
+          name: filter_id
+          schema:
+            type: string
+          required: true
+          description: The filter id to search, for example category id
+          examples:
+            categoryOne:
+              value: "2354"
+            categoryTwo:
+              value: "3456"
+        - in: path
+          name: order
+          schema:
+            type: string
+          required: true
+          description: Get a random datas by order
+          examples:
+            asc:
+              value: "ASC"
+            desc:
+              value: "DESC"
+        - in: path
+          name: from
+          schema:
+            type: string
+          required: true
+          description: Count init index
+          examples:
+            one:
+              value: "1"
+            two:
+              value: "10"
+        - in: path
+          name: quantity
+          schema:
+            type: string
+          required: true
+          description: Count finish index
+          examples:
+            ten:
+              value: "1"
+            fifty:
+              value: "50"
+      responses:
+        '200':
+          description: Data response with total filter by user id and some filterId like category.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataTotalByUserIdAndFilter'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /options/:
+    post:
+      tags:
+        - options
+      description: |
+        Endpoint for save option in server.
+      operationId: saveProject
+      requestBody:
+        description: Post to add option to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataOption'
+      responses:
+        '200':
+          description: option response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseOption'
+        '400 (1)':
+          $ref: '#/components/responses/BadRequestErrorOptionValidationText'
+        '400 (2)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionImagePathRequired'
+        '400 (3)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionImageRequired'
+        '400 (4)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionVideoIdRequired'
+        '400 (5)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionVideoNotFound'
+        '400 (6)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionVideoRequired'
+        '400 (7)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionTypeNotFound'
+        '400 (8)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionTypeRequired'
+        '400 (9)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionRequired'
+        '400 (10)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMaxOptionText'
+
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /options/{option_id}/addVote:
+    put:
+      tags:
+        - options
+      description: Update the total votes responses in option.
+      operationId: updateOptionTotalVotes
+      parameters:
+        - in: path
+          name: option_id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the option to put
+          examples:
+            _idOne:
+              value: "ewrt43tgf43tg8"
+            _idTwo:
+              value: "ewfrewgu90reer8"
+      responses:
+        '201':
+          description: Option add vote response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /options/{option_id}:
+    put:
+      tags:
+        - options
+      description: Update the option.
+      operationId: updateOption
+      parameters:
+        - in: path
+          name: option_id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the option to put
+          examples:
+            _idOne:
+              value: "ewrt43tgf43tg8"
+            _idTwo:
+              value: "ewfrewgu90reer8"
+      requestBody:
+        description: Option to update in the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataOption'
+      responses:
+        '201':
+          description: Option updated
+        '400 (1)':
+          $ref: '#/components/responses/BadRequestErrorOptionValidationText'
+        '400 (2)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionImagePathRequired'
+        '400 (3)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionImageRequired'
+        '400 (4)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionVideoIdRequired'
+        '400 (5)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionVideoNotFound'
+        '400 (6)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionVideoRequired'
+        '400 (7)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionTypeNotFound'
+        '400 (8)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionTypeRequired'
+        '400 (9)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMultimediaOptionRequired'
+        '400 (10)':
+          $ref: '#/components/responses/BadRequestErrorDataValidationMaxOptionText'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - options
+      description: deletes a single option based on the ID supplied
+      operationId: deleteOption
+      parameters:
+        - name: option_id
+          in: path
+          description: ID of option to delete
+          required: true
+          schema:
+            type: string
+          examples:
+            one:
+              value: "1wer34tesdgt5"
+            two:
+              value: "2rg5436egddd"
+      responses:
+        '204':
+          description: Option to deleted
+        '422 (1)':
+          $ref: '#/components/responses/UnprocessableEntityOptionInUse'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+
+  /categories/:
+    get:
+      tags:
+        - category
+      responses:
+        '200':
+          description: Category response with total
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseCategoryTotal'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - category
+      description: |
+        Endpoint for save category in server.
+      operationId: saveCategory
+      requestBody:
+        description: Post to add category to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataCategory'
+      responses:
+        '200':
+          description: Category response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseCategory'
+        '400':
+          $ref: '#/components/responses/BadRequestErrorCategoryValidationName'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /categories/{category_id}:
+    get:
+      tags:
+        - category
+      parameters:
+        - in: path
+          name: category_id
+          required: true
+          schema:
+            type: string
+          examples:
+            one:
+              value: 'er45mhy5565dfer'
+            two:
+              value: 'sdfe33454mty78f'
+      responses:
+        '200':
+          description: Category by id response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseCategory'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - category
+      description: Update the category data.
+      operationId: updateCategory
+      parameters:
+        - in: path
+          name: category_id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the category to put
+          examples:
+            _idOne:
+              value: "ewrt43tgf43tg8"
+            _idTwo:
+              value: "ewfrewgu90reer8"
+      requestBody:
+        description: Put to update category in the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataCategory'
+      responses:
+        '201':
+          description: Category update response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseCategory'
+        '400':
+          $ref: '#/components/responses/BadRequestErrorCategoryValidationName'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - category
+      description: deletes a single category based on the ID supplied
+      operationId: deleteCategory
+      parameters:
+        - name: category_id
+          in: path
+          description: ID of category to delete
+          required: true
+          schema:
+            type: string
+          examples:
+            one:
+              value: "1wer34tesdgt5"
+            two:
+              value: "2rg5436egddd"
+      responses:
+        '204':
+          description: category deleted
+        '422':
+          $ref: '#/components/responses/UnprocessableEntityCategoryInUse'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /categories/{order}/{from}/{quantity}:
+    get:
+      tags:
+        - category
+      parameters:
+        - in: path
+          name: order
+          required: true
+          schema:
+            type: string
+          examples:
+            asc:
+              value: 'asc'
+            desc:
+              value: 'desc'
+        - in: path
+          name: from
+          required: true
+          schema:
+            type: integer
+          examples:
+            fromone:
+              value: 1
+            fromten:
+              value: 10
+        - in: path
+          name: quantity
+          required: true
+          schema:
+            type: integer
+          examples:
+            tofifty:
+              value: 50
+            toOnehundred:
+              value: 100
+      responses:
+        '200':
+          description: Category asc response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseFilterCategory'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /clone/datas/{data_id}:
+    get:
+      tags:
+        - clone
+      parameters:
+        - in: path
+          name: data_id
+          schema:
+            type: string
+          required: true
+          description: The data id to clone
+          examples:
+            One:
+              value: 'wedt34tgwer'
+            Two:
+              value: 'wetrfe3456'
+      responses:
+        '200':
+          description: Response the data cloned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataClone'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /public/datas/{url}:
+    get:
+      tags:
+        - public
+      parameters:
+        - in: path
+          name: url
+          schema:
+            type: string
+          required: true
+          description: The url specificated for manager a data
+          examples:
+            urlOne:
+              value: 'discover-news'
+            urlTwo:
+              value: 'animals-in-2020'
+      responses:
+        '200':
+          description: Response the data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataPublic'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /public/preview/datas/{url}:
+    get:
+      tags:
+        - public
+      parameters:
+        - in: path
+          name: url
+          schema:
+            type: string
+          required: true
+          description: The url specificated for manager a data in preview
+          examples:
+            urlOne:
+              value: 'discover-news'
+            urlTwo:
+              value: 'animals-in-2020'
+      responses:
+        '200':
+          description: Response the data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataPublic'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+
+  schemas:
+
+    ResponseFilterCategory:
+      allOf:
+        - type: object
+        - $ref: '#/components/schemas/ResponseCategoryPagination'
+
+    Option:
+      allOf:
+        - $ref: '#/components/schemas/DataOption'
+        - type: object
+
+    DataOption:
+      type: object
+      required:
+        - image
+        - text
+      properties:
+        image:
+          type: string
+        text:
+          type: string
+      example:
+        text: 'Information'
+        order: 1
+        multimedia: {
+          type: "image",
+          video: {
+            type: "youtube",
+            id: "345ert",
+          },
+          image: {
+            path: "/imag/p.jpg",
+            alt: "alternative text",
+          },
+        }
+
+
+    DataData:
+      type: object
+      required:
+        - category_id
+        - url
+      properties:
+        user_id:
+          type: string
+        sharing:
+          type: array
+        content:
+          type: array
+        category_id:
+          type: string
+        url:
+          type: string
+        url-share:
+          type: object
+          properties:
+            type:
+              type: string
+            path:
+              type: string
+        theme:
+          type: string
+        date_init:
+          type: string
+        date_fin:
+         type: string
+      example:
+        user_id: "9843otng8er"
+        sharing: [ {
+          "social": "facebook",
+          "textToShare": "some text",
+          "image": "/image/url",
+          "image_alternativeText": "some text",
+        }]
+        content: [ {
+          "options": [
+          ],
+          "tag": "none",
+          "question": "Sabes cuanto es 1 + 1",
+          "description": "La respuesta es muy simple",
+          "answer": "debe ser 2",
+          "multimedia_question": {
+            type: "image",
+            video: {
+              type: "rtve",
+              id: "2345",
+            },
+            image: {
+              path: "/img/j.png",
+              alt: "some alt. text",
+              position: "top",
+            }
+          },
+          "multimedia_answer": {
+            type: "image",
+            video: {
+              type: "youtube",
+              id: "345ert",
+            },
+            image: {
+              path: "/imag/p.jpg",
+              alt: "alternative text",
+            },
+          },
+        }]
+        category_id: "5f8976c490f3d439a09c4d82"
+        url: "resist-without-definition"
+        url-share: {
+            type: "defaultUrl",
+            path: "https://es.es",
+        }
+        theme: "playz-light"
+        date_init: "2/2/2"
+        date_fin: "3/3/3"
+
+    ResponseDataRandom:
+      type: object
+      required:
+        - category_id
+        - url
+        - theme
+      properties:
+        user_id:
+          type: string
+        sharing:
+          type: array
+        content:
+          type: array
+        category_id:
+          type: string
+        url-share:
+          type: object
+        theme:
+          type: string
+        date_init:
+          type: string
+        date_fin:
+          type: string
+      example:
+        data: [
+          {
+            "_id": "5f8eecf8e319776e07bd4ba3",
+            "url": "Nunquam-transferre-torquis.",
+            "created": "3/3/3",
+            "content": [
+              {
+                "question": "Sabes cuanto es 1 + 1",
+                "multimedia_question": {
+                  type: "image",
+                  video: {
+                    type: "rtve",
+                    id: "2345",
+                  },
+                  image: {
+                    path: "/img/j.png",
+                    alt: "some alt. text",
+                    position: "top",
+                  }
+                },
+              }
+            ],
+            sharing: [
+              {
+                "_id": 'dfg',
+                "social": "facebook",
+                "textToShare": "dfdsfsdfdsf",
+                "image": "resources/resources-api-file/datas/59b3353dc8792be60e379693af76ed1f_large.jpg",
+                "image_alternativeText": "dfsdfdf sdfs",
+              },
+              {
+                "_id": 'dfg2',
+                "social": "twitter",
+                "textToShare": "dfsdfsdfdsfsd",
+                "image": "resources/resources-api-file/datas/59b3353dc8792be60e379693af76ed1f_large.jpg",
+                "image_alternativeText": "dfsdfdf sdfs",
+              },
+              {
+                "_id": 'dfg3',
+                "social": "whatsApp",
+                "textToShare": "dsfsdfsdfdsfs",
+                "image": "resources/resources-api-file/datas/59b3353dc8792be60e379693af76ed1f_large.jpg",
+                "image_alternativeText": "dfsdfdf sdfs",
+              }
+            ]
+          ,
+            "imageAlternativeNextData": '',
+          },
+          {
+            "_id": "5f8db04351913f4rf010f918",
+            "url": "When-roasting-whole-nachos",
+            "created": "3/3/3",
+            "content": [
+              {
+                "question": "Sabes cuanto es 1 + 1",
+                "multimedia_question": {
+                  type: "image",
+                  video: {
+                    type: "rtve",
+                    id: "2345",
+                  },
+                  image: {
+                    path: "/img/j.png",
+                    alt: "some alt. text",
+                    position: "top",
+                  }
+                },
+              }
+            ],
+            sharing: [
+              {
+                "_id": 'dfg',
+                "social": "facebook",
+                "textToShare": "dfdsfsdfdsf",
+                "image": "resources/resources-api-file/datas/59b3353dc8792be60e379693af76ed1f_large.jpg",
+                "image_alternativeText": "dfsdfdf sdfs",
+              },
+              {
+                "_id": 'dfg2',
+                "social": "twitter",
+                "textToShare": "dfsdfsdfdsfsd",
+                "image": "resources/resources-api-file/datas/59b3353dc8792be60e379693af76ed1f_large.jpg",
+                "image_alternativeText": "dfsdfdf sdfs",
+              },
+              {
+                "_id": 'dfg3',
+                "social": "whatsApp",
+                "textToShare": "dsfsdfsdfdsfs",
+                "image": "resources/resources-api-file/datas/59b3353dc8792be60e379693af76ed1f_large.jpg",
+                "image_alternativeText": "dfsdfdf sdfs",
+              }
+            ]
+          ,
+            "imageAlternativeNextData": '',
+          }
+        ]
+
+
+
+
+
+
+    DataDataUpdate:
+      type: object
+      required:
+        - category_id
+        - theme
+      properties:
+        user_id:
+          type: string
+        category_id:
+          type: string
+        url:
+          type: string
+        url-share:
+          type: object
+        theme:
+          type: string
+        date_init:
+          type: string
+        date_fin:
+          type: string
+      example:
+        user_id: "9843otng8er"
+        category_id: "8943in450er"
+        url: "the-gutless-plunder."
+        "url-share": {
+          "type": "defaultUrl",
+          "path": "https://es.es",
+        }
+        theme: "playz-light"
+        date_init: "2/2/2"
+        date_fin: "3/3/3"
+
+    DataDataQuestion:
+      type: object
+      required:
+        - question
+        - multimedia_question
+        - description
+        - answer
+        - multimedia_answer
+      properties:
+        question:
+          type: string
+        multimedia_question:
+          type: object
+        description:
+          type: array
+        answer:
+          type: string
+        multimedia_answer:
+          type: object
+      example:
+        question: "Some question?"
+        "multimedia_question": {
+          type: "image",
+          video: {
+            type: "rtve",
+            id: "2345",
+          },
+          image: {
+            path: "/img/j.png",
+            alt: "some alt. text",
+            position: "top",
+          }
+        }
+        description: "Some description"
+        answer: "Some answer"
+        "multimedia_answer": {
+          type: "image",
+          video: {
+            type: "youtube",
+            id: "345ert",
+          },
+          image: {
+            path: "/imag/p.jpg",
+            alt: "alternative text",
+          },
+        }
+
+    DataQuestionOption:
+      type: object
+      required:
+        - option_id
+      properties:
+        option_id:
+          type: string
+      example:
+        option_id: "45yg4536534uy65u"
+
+
+    DataCategory:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      example:
+        name: "Clima"
+        description: "Data clima"
+
+    ResponseCategoryPagination:
+      type: object
+      properties:
+        total:
+          type: number
+        data:
+          type: array
+      example:
+        total: 100
+        data:
+          - { _id: '1gdfger4536df',
+              name: 'Information',
+              description: 'some description'}
+          - { _id: '1gdfger4536df',
+              name: 'View',
+              description: 'some description'}
+
+    ResponseOption:
+      type: object
+      required:
+        - _id
+        - text
+        - total_votes
+        - multimedia
+      properties:
+        _id:
+          type: string
+        text:
+          type: string
+        multimedia:
+          type: object
+        total_votes:
+          type: string
+      example:
+        "total_votes": 0
+        "tag": "informationnews"
+        "_id": "5f7c8d702db985"
+        "text": "InformationNews"
+        multimedia: {
+          type: "image",
+          video: {
+            type: "youtube",
+            id: "345ert",
+          },
+          image: {
+            path: "/imag/p.jpg",
+            alt: "alternative text",
+          },
+        }
+        "created": "2020-10-06T15:29:52.122Z"
+        "__v": 0
+
+
+    ResponseData:
+      type: object
+      required:
+        - _id
+        - category_id
+        - theme
+      properties:
+        _id:
+          type: string
+        user_id:
+          type: string
+        sharing:
+          type: array
+        content:
+          type: array
+        category_id:
+          type: string
+        url:
+          type: string
+        url-share:
+          type: object
+        theme:
+          type: string
+      example:
+        _id: "kjvcdf8943nfg340"
+        user_id: "9843otng8er"
+        sharing: []
+        content: []
+        category_id: "8943in450er"
+        url: "never-gain-the-saint"
+        "url-share": {
+          "type": "defaultUrl",
+          "path": "https://es.es",
+        }
+        theme: "playz-light"
+        date_init: "2/2/2"
+        date_fin: "3/3/3"
+
+    ResponseDataById:
+      type: object
+      required:
+        - _id
+        - category_id
+        - url
+      properties:
+        _id:
+          type: string
+        user_id:
+          type: string
+        sharing:
+          type: array
+        content:
+          type: array
+        category_id:
+          type: string
+        url:
+          type: string
+        url-share:
+          type: object
+        theme:
+          type: string
+      example:
+        enable: false
+        public: false
+        _id: "5f46222aa4208155502a95a4"
+        user_id: "9843otng8er"
+        sharing: [{
+            "social": "facebook",
+            "textToShare": "some text",
+            "image": "/image/url",
+            "image_alternativeText": "some text",
+        }]
+        content: [ {
+          "options": [{
+              "_id": "5f478429bfa2fd844846853f",
+              "text": "some text",
+              "total_votes": "3",
+              "order": 1,
+              "multimedia": {
+                type: "image",
+                video: {
+                  type: "youtube",
+                  id: "345ert",
+                },
+                image: {
+                  path: "/imag/p.jpg",
+                  alt: "alternative text",
+                },
+              },
+            },
+            {
+              "_id": "5f478450bfa2fd8448468542",
+              "text": "some text xkskd",
+              "total_votes": "3",
+              "order": 2,
+              "multimedia": {
+                type: "image",
+                video: {
+                  type: "youtube",
+                  id: "345ert",
+                },
+                image: {
+                  path: "/imag/p.jpg",
+                  alt: "alternative text",
+                },
+              },
+            }],
+          "tag": "none",
+          "_id": ObjectId("5f8863fadd30836fa0aa65f6"),
+          "question": "Sabes cuanto es 1 + 1",
+          "multimedia_question": {
+            type: "image",
+            video: {
+              type: "rtve",
+              id: "2345",
+            },
+            image: {
+              path: "/img/j.png",
+              alt: "some alt. text",
+              position: "top",
+            }
+          },
+          "description": "La respuesta es muy simple",
+          "answer": "debe ser 2",
+          "multimedia_answer": {
+            type: "image",
+            video: {
+              type: "youtube",
+              id: "345ert",
+            },
+            image: {
+              path: "/imag/p.jpg",
+              alt: "alternative text",
+            },
+          },
+        }]
+        category_id: "5f46222aa4208155502a95a3"
+        url: "everyone-loves"
+        "url-share": {
+          "type": "defaultUrl",
+          "path": "https://es.es",
+        }
+        theme: "playz-light"
+        modified: "2020-08-26T08:49:46.449Z"
+        created: "2020-08-26T08:49:46.449Z"
+
+
+    ResponseDataResults:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+      example:
+          data: [
+            {
+              "total_votes": 70,
+              "_id": "5f8db049096faf4af08ca008",
+              "text": "Orielongitud mas",
+              "order": 1,
+              "percent": 70,
+              "multimedia": {
+                type: "image",
+                video: {
+                  type: "youtube",
+                  id: "345ert",
+                },
+                image: {
+                  path: "/imag/p.jpg",
+                  alt: "alternative text",
+                },
+              },
+            },
+            {
+              "total_votes": 30,
+              "_id": "5f92b0994f66ca0e40b1de15",
+              "text": "Lisettelongitud mas",
+              "order": 1,
+              "percent": 30,
+              "multimedia": {
+                type: "image",
+                video: {
+                  type: "youtube",
+                  id: "345ert",
+                },
+                image: {
+                  path: "/imag/p.jpg",
+                  alt: "alternative text",
+                },
+              },
+            }
+          ]
+
+    ResponseDataQuestion:
+      type: object
+      required:
+        - _id
+        - question
+        - description
+        - answer
+      properties:
+        _id:
+          type: string
+        question:
+          type: string
+        description:
+          type: array
+        multimedia_question:
+          type: object
+        multimedia_answer:
+          type: object
+        answer:
+          type: string
+      example:
+        enable: true
+        public: false
+        _id: "5f3bfe4dddb428666c28f2ed"
+        user_id: "9843otng8er"
+        sharing: []
+        content: [{
+          _id: "8934n50989gr",
+          question: "Some question?",
+          "multimedia_question": {
+            type: "image",
+            video: {
+              type: "rtve",
+              id: "2345",
+            },
+            image: {
+              path: "/img/j.png",
+              alt: "some alt. text",
+              position: "top",
+            }
+          },
+          description: "Some description",
+          answer: "Some answer",
+          "multimedia_answer": {
+            type: "image",
+            video: {
+              type: "youtube",
+              id: "345ert",
+            },
+            image: {
+              path: "/imag/p.jpg",
+              alt: "alternative text",
+            },
+          },
+        }]
+
+    ResponseDataClone:
+      type: object
+      required:
+        - _id
+      properties:
+        _id:
+          type: string
+      example:
+        enable: true
+        public: false
+        _id: "5f3bfe4dddb428666c28f2ed"
+        user_id: "9843otng8er"
+        sharing: [ ]
+        content: [ {
+          _id: "8934n50989gr",
+          question: "Some question?",
+          "multimedia_question": {
+            type: "image",
+            video: {
+              type: "rtve",
+              id: "2345",
+            },
+            image: {
+              path: "/img/j.png",
+              alt: "some alt. text",
+              position: "top",
+            }
+          },
+          description: "Some description",
+          options:[{}],
+          answer: "Some answer",
+          "multimedia_answer": {
+            type: "image",
+            video: {
+              type: "youtube",
+              id: "345ert",
+            },
+            image: {
+              path: "/imag/p.jpg",
+              alt: "alternative text",
+            },
+          },
+        } ]
+        category_id: "kskdkshdalllkas"
+        url: "all-hips-lead"
+        "url-share": {
+          "type": "defaultUrl",
+          "path": "https://es.es",
+        }
+        modified: "2020-08-26T08:49:46.449Z"
+        created: "2020-08-26T08:49:46.449Z"
+
+    ResponseDataPublic:
+      type: object
+      required:
+        - _id
+        - category_id
+        - url
+      properties:
+        _id:
+          type: string
+        user_id:
+          type: string
+        sharing:
+          type: array
+        content:
+          type: array
+        category_id:
+          type: string
+        url:
+          type: string
+        url-share:
+          type: object
+        theme:
+          type: string
+      example:
+        enable: true
+        public: false
+        _id: "5f3bfe4dddb428666c28f2ed"
+        user_id: "9843otng8er"
+        sharing: [{ "social": "facebook",
+                    "textToShare": "some text",
+                    "image": "/image/url",
+                    "image_alternativeText": "some text",} ]
+        content: [ {
+          _id: "8934n50989gr",
+          question: "Some question?",
+          "multimedia_question": {
+            type: "image",
+            video: {
+              type: "rtve",
+              id: "2345",
+            },
+            image: {
+              path: "/img/j.png",
+              alt: "some alt. text",
+              position: "top",
+            }
+          },
+          description: "Some description",
+          options: [ {
+            "_id": "5f478429bfa2fd844846853f",
+            "text": "some text",
+            "total_votes": "3",
+            "order": 1,
+            "multimedia": {
+              type: "image",
+              video: {
+                type: "youtube",
+                id: "345ert",
+              },
+              image: {
+                path: "/imag/p.jpg",
+                alt: "alternative text",
+              },
+            },
+          }],
+          answer: "Some answer",
+          "multimedia_answer": {
+            type: "image",
+            video: {
+              type: "youtube",
+              id: "345ert",
+            },
+            image: {
+              path: "/imag/p.jpg",
+              alt: "alternative text",
+            },
+          },
+        } ]
+        category_id: '234kf09wf9043t09'
+        url: "you-have-to-become"
+        "url-share": {
+          "type": "defaultUrl",
+          "path": "https://es.es",
+        }
+        theme: "playz-light"
+        modified: "2020-08-26T08:49:46.449Z"
+        created: "2020-08-26T08:49:46.449Z"
+
+    ResponseCategory:
+      type: object
+      required:
+        - _id
+        - name
+        - description
+        - created
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        created:
+          type: string
+      example:
+        _id: 1
+        name: 'Clima'
+        description: 'Data clima'
+        created: '23/23/23'
+
+    ResponseCategoryTotal:
+      allOf:
+        - type: object
+        - example:
+            total: 10
+            data:
+                - {  _id: 1,
+                    name: 'Clima',
+                    description: 'Data clima',
+                    created: '23/23/23',
+                   }
+
+
+    ResponseDataTotal:
+      type: object
+      properties:
+        _id:
+          type: string
+        user_id:
+          type: string
+        sharing:
+          type: array
+        content:
+          type: array
+        category_id:
+          type: string
+        url:
+          type: string
+        url-share:
+          type: object
+          properties:
+            type:
+              type: string
+            path:
+              type: string
+        theme:
+          type: string
+      example:
+        total: 100
+        data:
+          - {
+            enable: false,
+            public: false,
+            _id: "5f46222aa4208155502a95a4",
+            category_id:{
+              _id: "5f46222aa4208155502a95a3",
+              name: "Lennon Gerlach and Gottlieb",},
+            url: "squeeze-tofu-quickly",
+            url-share: {
+              "type": "defaultUrl",
+              "path": "https://es.es",
+            },
+            theme: "playz-light",
+            modified: "2020-08-26T08:49:46.449Z",
+            created: "2020-08-26T08:49:46.449Z",
+          }
+          - {
+              "enable": true,
+              "public": false,
+              "_id": "5f477d886504f952a4089abb",
+              "category_id": {
+                "_id": "5f462248ddf0d50d8c2aaa64",
+                "name": "Auer, Jones and Russel",
+              },
+              url: "squeeze-tofu",
+              url-share: {
+                "type": "defaultUrl",
+                "path": "https://es.es",
+              },
+              theme: "playz-light",
+              "modified": "2020-08-26T08:50:16.129Z",
+              "created": "2020-08-26T08:50:16.129Z",
+            }
+
+    ResponseDataTotalByUserId:
+      type: object
+      properties:
+        _id:
+          type: string
+        content:
+          type: array
+        category_id:
+          type: string
+        url:
+          type: string
+        enable:
+          type: boolean
+        public:
+          type: boolean
+      example:
+        total: 100
+        data:
+          - {
+            "enable": false,
+            "public": false,
+            "_id": "5f46222aa4208155502a95a4",
+            "content": [
+              {
+                "_id": "5f478380bfa2fd844846853e",
+                "question": "Cuantos hay?",
+              }
+            ],
+            url: "some-url",
+          }
+
+    ResponseDataTotalByUserIdAndWord:
+      type: object
+      properties:
+        _id:
+          type: string
+        content:
+          type: array
+        category_id:
+          type: string
+        url:
+          type: string
+        enable:
+          type: boolean
+        public:
+          type: boolean
+      example:
+        total: 100
+        data:
+          - {
+            "enable": false,
+            "public": false,
+            "_id": "5f46222aa4208155502a95a4",
+            "content": [
+              {
+                "_id": "5f478380bfa2fd844846853e",
+                "question": "Cuantos hay?",
+              }
+            ],
+            url: "some-url",
+          }
+
+
+    ResponseDataTotalByUserIdAndFilter:
+      type: object
+      properties:
+        _id:
+          type: string
+        content:
+          type: array
+        category_id:
+          type: string
+        url:
+          type: string
+        enable:
+          type: boolean
+        public:
+          type: boolean
+      example:
+        total: 100
+        data:
+          - {
+            "enable": false,
+            "public": false,
+            "_id": "5f46222aa4208155502a95a4",
+            "content": [
+              {
+                "_id": "5f478380bfa2fd844846853e",
+                "question": "Cuantos hay?",
+              }
+            ],
+            url: "some-url",
+          }
+
+
+    ResponseDataTotalAscDesc:
+      type: object
+      properties:
+        _id:
+          type: string
+        user_id:
+          type: string
+        sharing:
+          type: array
+        content:
+          type: array
+        category_id:
+          type: string
+        url:
+          type: string
+        url-share:
+          type: object
+          properties:
+            type:
+              type: string
+            path:
+              type: string
+        theme:
+          type: string
+      example:
+        total: 100
+        data:
+          - {
+            "enable": false,
+            "public": false,
+            "_id": "5f46222aa4208155502a95a4",
+            "content": [
+              {
+                "options": [
+                  {
+                    "_id": "5f478429bfa2fd844846853f",
+                    "text": "3",
+                  },
+                  {
+                    "_id": "5f478450bfa2fd8448468542",
+                    "text": "2",
+                  }
+                ],
+                "tag": "none",
+                "_id": "5f478380bfa2fd844846853e",
+                "question": "Cuantos hay?",
+                "multimedia_question": {
+                  type: "image",
+                  video: {
+                    type: "rtve",
+                    id: "2345",
+                  },
+                  image: {
+                    path: "/img/j.png",
+                    alt: "some alt. text",
+                    position: "top",
+                  }
+                },
+                "description": "La respuesta es muy simple",
+                "answer": "1",
+                "multimedia_answer": {
+                  type: "image",
+                  video: {
+                    type: "youtube",
+                    id: "345ert",
+                  },
+                  image: {
+                    path: "/imag/p.jpg",
+                    alt: "alternative text",
+                  },
+                },
+              }
+            ],
+            "modified": "2020-08-26T08:49:46.449Z",
+            "created": "2020-08-26T08:49:46.449Z",
+            "__v": 0,
+            "category": {
+              "_id": "5f46222aa4208155502a95a3",
+              "name": "Leannon, Gerlach and Gottlieb",
+              "description": "category description",
+            },
+            url: "some-url",
+            "url-share": {
+              "type": "defaultUrl",
+              "path": "https://es.es",
+            },
+            theme: "playz-light",
+          }
+
+    ResponseDataSearch:
+      type: object
+      properties:
+        _id:
+          type: string
+        content:
+          type: array
+        category_id:
+          type: string
+        url:
+          type: string
+        enable:
+          type: boolean
+        public:
+          type: boolean
+      example:
+        total: 100
+        data:
+          - {
+            "enable": false,
+            "public": false,
+            "_id": "5f46222aa4208155502a95a4",
+            "content": [
+              {
+                "_id": "5f478380bfa2fd844846853e",
+                "question": "Cuantos hay?",
+              }
+            ],
+            url: "some-url",
+          }
+
+
+
+    ResponseDataByCategory:
+      type: object
+      properties:
+        _id:
+          type: string
+        user_id:
+          type: string
+        sharing:
+          type: array
+        content:
+          type: array
+        category_id:
+          type: string
+        url:
+          type: string
+        url-share:
+          type: object
+        theme:
+          type: string
+      example:
+        total: 10
+        data:
+          - {
+            "enable": true,
+            "public": false,
+            "_id": "5f47bbbea9c8dd60a43dd981",
+            "content": [],
+            "modified": "2020-08-27T13:57:18.680Z",
+            "created": "2020-08-27T13:57:18.680Z",
+            "__v": 0,
+            "category": {
+              "_id": "5f47bbbea9c8dd60a43dd980",
+              "name": "Lehner Inc",
+              "description": "category description",
+            },
+            url: "damn-yer-bucaneer",
+            "url-share": {
+              "type": "defaultUrl",
+              "path": "https://es.es",
+            },
+            theme: "playz-light",
+          }
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+
+
+  responses:
+    UnauthorizedError:
+      description: Authentication information is missing or invalid
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
+
+    BadRequestError:
+      description: Data provided is invalid or not data found
+
+
+
+    BadRequestErrorDataValidationQuestion:
+      description: The question is required and should have min. 10 characters.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "question-min-invalid"
+
+
+    BadRequestErrorDataValidationMaxDescriptionQuestion:
+      description: The description  should have max. 300 characters.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "description-max-invalid"
+
+    BadRequestErrorOptionValidationText:
+      description: The text is required and should have min. 1 characters.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "option-text-invalid "
+
+    BadRequestErrorDataValidationMaxOptionText:
+      description: The text  should have max. 50 characters, but in data base it have 500 max.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "option-text-max-invalid"
+
+    BadRequestErrorCategoryValidationName:
+      description: The name is required and should have min. 2 characters.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "category-name-invalid"
+
+
+    BadRequestErrorDataValidationUrlRequired:
+      description: The url is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "url-required"
+
+
+    BadRequestErrorDataValidationUrlMin:
+      description: The url has 10 min caracters.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "url-min-invalid"
+
+
+    BadRequestErrorDataValidationUrlMax:
+      description: The url has 120 max caracters.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "url-max-invalid"
+
+    BadRequestErrorDataValidationUrlCaracters:
+      description: The url should not containt !@#$%^&*()_+=[]{};:\|,.<>?~.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "url-character-invalid"
+
+    BadRequestErrorDataValidationUrlUnique:
+      description: The url is in use, unique restriction.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-url-exists"
+
+    BadRequestErrorDataValidationUrlShareRequired:
+      description: The url share is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-url-share-required"
+
+    BadRequestErrorDataValidationUrlShareTypeRequired:
+      description: The type's url share is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-url-share-type-required"
+
+    BadRequestErrorDataValidationUrlSharePathMin:
+      description: The path's url share should have min. 10.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-url-share-path-min"
+
+    BadRequestErrorDataValidationUrlShareTypeNotFound:
+      description: The type's url share should be defaultUrl or customUrl.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-url-share-type-not-found"
+
+
+    BadRequestErrorDataValidationMultimediaQuestionRequired:
+      description: The multimedia for question in content is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-question-required"
+
+
+    BadRequestErrorDataValidationMultimediaQuestionTypeRequired:
+      description: The type's multimedia for question in content is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-question-type-required"
+
+
+    BadRequestErrorDataValidationMultimediaQuestionTypeNotFound:
+      description: The type's multimedia for question in content should be image,video or none.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-question-type-not-found"
+
+
+    BadRequestErrorDataValidationMultimediaQuestionVideoRequired:
+      description: The video's multimedia for question in content is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-question-video-required"
+
+
+    BadRequestErrorDataValidationMultimediaQuestionVideoNotFound:
+      description: The video's multimedia for question in content should be rtve or youtube.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-question-video-type-not-found"
+
+
+    BadRequestErrorDataValidationMultimediaQuestionVideoIdRequired:
+      description: The id video's multimedia for question in content is required if type equal video.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-question-video-id-required"
+
+
+    BadRequestErrorDataValidationMultimediaQuestionImageRequired:
+      description: The image's multimedia for question in content is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-question-image-required"
+
+
+    BadRequestErrorDataValidationMultimediaQuestionImagePathRequired:
+      description: The path image's multimedia for question in content is required if type equal image.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-question-image-path-required"
+
+
+    BadRequestErrorDataValidationMultimediaQuestionImagePositionNotFound:
+      description: The position image's multimedia for question in content should be top or background.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-question-image-position-not-found"
+
+
+    BadRequestErrorDataValidationMultimediaAnswerRequired:
+      description: The multimedia for answer in content is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-answer-required"
+
+
+    BadRequestErrorDataValidationMultimediaAnswerTypeRequired:
+      description: The type's multimedia for answer in content is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-answer-type-required"
+
+
+    BadRequestErrorDataValidationMultimediaAnswerTypeNotFound:
+      description: The type's multimedia for answer in content should be image,video or none.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-answer-type-not-found"
+
+
+    BadRequestErrorDataValidationMultimediaAnswerVideoRequired:
+      description: The video's multimedia for answer in content is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-answer-video-required"
+
+
+    BadRequestErrorDataValidationMultimediaAnswerVideoNotFound:
+      description: The video's multimedia for answer in content should be rtve or youtube.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-answer-video-type-not-found"
+
+
+    BadRequestErrorDataValidationMultimediaAnswerVideoIdRequired:
+      description: The id video's multimedia for answer in content is required if type equal video.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-answer-video-id-required"
+
+    BadRequestErrorDataValidationMultimediaAnswerImageRequired:
+      description: The image's multimedia for answer in content is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-answer-image-required"
+
+    BadRequestErrorDataValidationMultimediaAnswerImagePathRequired:
+      description: The path image's multimedia for answer in content is required if type equal image.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-answer-image-path-required"
+
+
+    BadRequestErrorDataValidationMultimediaOptionRequired:
+      description: The multimedia for option in content is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-option-required"
+
+
+    BadRequestErrorDataValidationMultimediaOptionTypeRequired:
+      description: The type's multimedia for option in content is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-option-type-required"
+
+
+    BadRequestErrorDataValidationMultimediaOptionTypeNotFound:
+      description: The type's multimedia for option in content should be image,video or none.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-option-type-not-found"
+
+
+    BadRequestErrorDataValidationMultimediaOptionVideoRequired:
+      description: The video's multimedia for option in content is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-option-video-required"
+
+
+    BadRequestErrorDataValidationMultimediaOptionVideoNotFound:
+      description: The video's multimedia for option in content should be rtve or youtube.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-option-video-not-found"
+
+
+    BadRequestErrorDataValidationMultimediaOptionVideoIdRequired:
+      description: The id video's multimedia for option in content is required if type equal video.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-option-video-id-required"
+
+
+    BadRequestErrorDataValidationMultimediaOptionImageRequired:
+      description: The image's multimedia for option in content is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-option-image-required"
+
+    BadRequestErrorDataValidationMultimediaOptionImagePathRequired:
+      description: The path image's multimedia for option in content is required if type equal image.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "Validation data"
+            type: "data-multimedia-option-image-path-required"
+
+
+
+    UnprocessableEntity:
+      description: A DB restriction was triggered.
+
+    UnprocessableEntityOptionInUse:
+      description: The option can't be delete, it is used in data document.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "FK Constraint option is used"
+            type: "option-in-use"
+
+    UnprocessableEntityCategoryInUse:
+      description: The category can't be delete, it is used in data document.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequestError'
+          example:
+            status: "error"
+            message: "FK Constraint category is used"
+            type: "category-in-use"
